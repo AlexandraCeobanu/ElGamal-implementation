@@ -1,0 +1,4 @@
+github.com/Mirzazhar/elgamal v0.0.0-20211027001902-b38010715347 h1:RaUmu8FkWqWSKqf8miK+V4oRFuEYx0CcmUZPkrfyZ3A=
+github.com/Mirzazhar/elgamal v0.0.0-20211027001902-b38010715347/go.mod h1:L/vqCeJ+mygald3X3fmHlle8ud1PlRLTgoMa1XGIPNk=
+golang.org/x/crypto v0.28.0 h1:GBDwsMXVQi34v5CCYUm2jkJvu4cbtru2U4TN2PSyQnw=
+golang.org/x/crypto v0.28.0/go.mod h1:rmgy+3RHxRZMyY0jjAJShp2zgEdOqj2AO7U0pYmeQ7U=
