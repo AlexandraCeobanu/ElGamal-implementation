@@ -52,7 +52,7 @@ func encrypt(m []byte, publicKey PublicKey) (*big.Int, []byte, error) {
 	h_la_k := new(big.Int).Exp(&publicKey.h, k, &publicKey.p)
 
 	hash := sha256.Sum256(h_la_k.Bytes())
-	fmt.Println("Message hash: ", hash)
+	fmt.Println("hash h_la_k: ", hash)
 	newHash := make([]byte, len(m))
 	for i := range newHash {
 		newHash[i] = hash[i%len(hash)]

@@ -75,6 +75,7 @@ func mapMessageToPoint(m []byte, curve elliptic.Curve) (*big.Int, *big.Int, *big
 	bitWords := toWord(newBits)
 	newx = new(big.Int).SetBits(bitWords)
 	right = computeY(newx, curve)
+	i := 0
 	for big.NewInt(-1).Cmp(legendreSymbol(right, curve.Params().P)) == 0 {
 		r, _ = rand.Int(rand.Reader, big.NewInt(2))
 		newBytes := newx.Bytes()
@@ -88,7 +89,9 @@ func mapMessageToPoint(m []byte, curve elliptic.Curve) (*big.Int, *big.Int, *big
 		bitWords := toWord(newBits)
 		newx = new(big.Int).SetBits(bitWords)
 		right = computeY(newx, curve)
+		i = i + 1
 	}
+	fmt.Println("i : ", i)
 
 	var R1 *big.Int = big.NewInt(0)
 	var R2 *big.Int = big.NewInt(0)

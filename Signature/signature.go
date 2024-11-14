@@ -82,11 +82,11 @@ func verify(gamma *big.Int, delta *big.Int, m *big.Int, PublicKey PublicKey) (st
 
 	g_la_m := new(big.Int).Exp(&PublicKey.g, m, &PublicKey.p)
 
-	left := new(big.Int).Mod(
+	right := new(big.Int).Mod(
 		new(big.Int).Mul(ga_la_gamma, gamma_la_delta), &PublicKey.p,
 	)
 
-	if left.Cmp(g_la_m) == 0 {
+	if right.Cmp(g_la_m) == 0 {
 		return "Success", nil
 	} else {
 		return "", errors.New("Fail")

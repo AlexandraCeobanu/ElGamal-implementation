@@ -65,11 +65,10 @@ func main() {
 	// messageString := "ajashfjashgajjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
 	messageString := "secret message"
 	message := new(big.Int).SetBytes([]byte(messageString))
-	fmt.Println(message)
 	// message := big.NewInt(12333333333333)
 
 	fmt.Println("Initial Message: ", messageString)
-
+	fmt.Println("Message int : ", message)
 	p, q, g, err := elgamal.Gen(256, 20)
 
 	if err != nil {
@@ -81,8 +80,8 @@ func main() {
 	fmt.Println("g = ", g)
 	privateKey, publicKey := genKeys(p, q, g)
 
-	fmt.Println("Destinatar Cheie Publica:  ", &publicKey.h)
-	fmt.Println("Destinatar Cheie Privata:  ", privateKey)
+	fmt.Println("Destinatar Cheie Publica: (h)  ", &publicKey.h)
+	fmt.Println("Destinatar Cheie Privata: (a)  ", privateKey)
 
 	c1, c2, err := encrypt(message, publicKey)
 	if err == nil {
