@@ -65,38 +65,29 @@ func mapMessageToPoint(m []byte, curve elliptic.Curve) (*big.Int, *big.Int, *big
 	var newBits string
 	var newx *big.Int
 	var right *big.Int
-	one := big.NewInt(1)
-	r, _ := rand.Int(rand.Reader, big.NewInt(2))
-	if r.Cmp(one) == 0 {
-		newBits = "0" + "1" + bits
-	} else {
-		newBits = "0" + "0" + bits
-	}
+	var seqR string
+	cpy := bits
+	fmt.Println("Message bits : ", bits)
+	seqR = generateR(big.NewInt(int64(len(bits))), P)
+	newBits = "0" + seqR + bits
 	bitWords := toWord(newBits)
 	newx = new(big.Int).SetBits(bitWords)
 	right = computeY(newx, curve)
 	i := 0
-	for big.NewInt(-1).Cmp(legendreSymbol(right, curve.Params().P)) == 0 {
-		r, _ = rand.Int(rand.Reader, big.NewInt(2))
-		newBytes := newx.Bytes()
-		bits2 := toBits(newBytes)
-		var newBits string
-		if r.Cmp(one) == 0 {
-			newBits = bits2[0:(len(bits2)-len(bits))] + "1" + bits2[(len(bits2)-len(bits)):]
-		} else {
-			newBits = bits2[0:(len(bits2)-len(bits))] + "0" + bits2[(len(bits2)-len(bits)):]
-		}
+	for new(big.Int).ModSqrt(right, curve.Params().P) == nil {
+		seqR = generateR(big.NewInt(int64(len(bits))), P)
+		newBits = "0" + seqR + bits
 		bitWords := toWord(newBits)
 		newx = new(big.Int).SetBits(bitWords)
 		right = computeY(newx, curve)
 		i = i + 1
 	}
-	fmt.Println("i : ", i)
+	fmt.Println(" 0 | r | m : ", 0, seqR, cpy)
 
 	var R1 *big.Int = big.NewInt(0)
 	var R2 *big.Int = big.NewInt(0)
 
-	if big.NewInt(-1).Cmp(legendreSymbol(right, curve.Params().P)) != 0 {
+	if new(big.Int).ModSqrt(right, curve.Params().P) != nil {
 
 		R1.ModSqrt(right, P)
 		R2.Sub(curve.Params().P, R1)
@@ -109,7 +100,30 @@ func mapMessageToPoint(m []byte, curve elliptic.Curve) (*big.Int, *big.Int, *big
 		fmt.Println("nu existaaaaaaaaaaaaaaaaaaaaa")
 	}
 
-	return x, y, r, nil
+	return x, y, nil, nil
+
+}
+func generateR(l *big.Int, p *big.Int) string {
+
+	pBytes := p.Bytes()
+	lengthP := big.NewInt(int64(len(toBits(pBytes))))
+
+	max := new(big.Int).Sub(lengthP, l)
+	r, _ := rand.Int(rand.Reader, max)
+
+	var bitString strings.Builder
+
+	limit := int(r.Int64())
+
+	for i := 0; i < limit; i++ {
+		bit, err := rand.Int(rand.Reader, big.NewInt(2))
+		if err != nil {
+			return ""
+		}
+		bitString.WriteString(bit.String())
+	}
+
+	return bitString.String()
 
 }
 func toWord(bitString string) []big.Word {
@@ -134,22 +148,6 @@ func computeY(x *big.Int, curve elliptic.Curve) *big.Int {
 	y.Add(y, curve.Params().B)
 	y.Mod(y, curve.Params().P)
 	return y
-}
-func legendreSymbol(a *big.Int, p *big.Int) *big.Int {
-
-	if a.Cmp(big.NewInt(0)) == 0 {
-		return big.NewInt(0)
-	}
-	exponent := new(big.Int).Sub(p, big.NewInt(1))
-	exponent.Div(exponent, big.NewInt(2))
-
-	result := new(big.Int).Exp(a, exponent, p)
-	var q *big.Int = big.NewInt(0)
-	if result.Cmp(q.Sub(p, big.NewInt(1))) == 0 {
-		return big.NewInt(-1)
-	}
-	return result
-
 }
 func decrypt(curve elliptic.Curve, bP_x, bP_y *big.Int, C_x *big.Int, C_y *big.Int, privateKey *ecdsa.PrivateKey) (*big.Int, *big.Int) {
 

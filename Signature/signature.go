@@ -38,31 +38,14 @@ func genKeys(p, q, g *big.Int) (*big.Int, PublicKey) {
 func sign(message *big.Int, PublicKey PublicKey, privateKey *big.Int) (*big.Int, *big.Int, error) {
 
 	k := new(big.Int)
-	gcd := new(big.Int)
-	var err error
-	for {
-		k, err = rand.Int(rand.Reader, new(big.Int).Sub(&PublicKey.p, two))
-		if err != nil {
-			return nil, nil, err
-		}
-		if k.Cmp(one) == 0 {
-			continue
-		} else {
-			gcd = gcd.GCD(nil, nil, k, new(big.Int).Sub(&PublicKey.p, one))
-			if gcd.Cmp(one) == 0 {
-				break
-			}
-		}
-	}
-
+	k, _ = rand.Int(rand.Reader, new(big.Int).Sub(&PublicKey.p, one))
 	gamma := new(big.Int).Exp(&PublicKey.g, k, &PublicKey.p)
 
-	x_gamma := new(big.Int).Mod(
+	a_gamma := new(big.Int).Mod(
 		new(big.Int).Mul(gamma, privateKey),
 		new(big.Int).Sub(&PublicKey.p, one),
 	)
-
-	sub := new(big.Int).Sub(message, x_gamma)
+	sub := new(big.Int).Sub(message, a_gamma)
 
 	k = k.ModInverse(k, new(big.Int).Sub(&PublicKey.p, one))
 
@@ -112,7 +95,6 @@ func main() {
 	privateKey, publicKey := genKeys(p, q, g)
 
 	gamma, delta, err := sign(message, publicKey, privateKey)
-	// gamma.Add(gamma, big.NewInt(1))
 
 	if err == nil {
 		fmt.Println("gamma = ", gamma)
@@ -120,7 +102,7 @@ func main() {
 	} else {
 		fmt.Println(err)
 	}
-
+	message = new(big.Int).SetBytes([]byte("modificat"))
 	output, err := verify(gamma, delta, message, publicKey)
 	if err == nil {
 		fmt.Println(output)

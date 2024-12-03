@@ -90,11 +90,11 @@ func main() {
 	fmt.Println("Message:  ", message)
 
 	hash, sigma, delta := sign([]byte(message), curve, privateKey.D)
-	sigma.Add(sigma, big.NewInt(1))
 	fmt.Println("Hash : ", hash)
 	fmt.Println("Sigma : ", sigma)
 	fmt.Println("Delta : ", delta)
 
+	// message = "modificat"
 	fmt.Println(Verify([]byte(message), sigma, delta, curve, publicKey))
 
 }

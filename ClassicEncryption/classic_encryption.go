@@ -72,7 +72,7 @@ func main() {
 	p, q, g, err := elgamal.Gen(256, 20)
 
 	if err != nil {
-		fmt.Println("Eroare la generarea p, q, g:", err)
+		fmt.Println("Eroare la generarea p, g:", err)
 		return
 	}
 
@@ -80,8 +80,8 @@ func main() {
 	fmt.Println("g = ", g)
 	privateKey, publicKey := genKeys(p, q, g)
 
-	fmt.Println("Destinatar Cheie Publica: (h)  ", &publicKey.h)
-	fmt.Println("Destinatar Cheie Privata: (a)  ", privateKey)
+	fmt.Println("a  ", privateKey)
+	fmt.Println("g^a  ", &publicKey.h)
 
 	c1, c2, err := encrypt(message, publicKey)
 	if err == nil {
@@ -92,6 +92,7 @@ func main() {
 	}
 	decryptedMessage, err := decrypt(c1, c2, privateKey, p)
 	if err == nil {
+		fmt.Println("Decrypted Message: ", decryptedMessage)
 		fmt.Println("Decrypted Message: ", string(decryptedMessage.Bytes()))
 	} else {
 		fmt.Println(err)
